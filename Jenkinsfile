@@ -2,6 +2,9 @@ pipeline {
     agent any
 
     // this section configures Jenkins options
+    parameters{
+        choice(name : "NUMBER", choices: [10,20,30,40,50,60,70,80,90], description: "All the choices available")
+    }
     options {
 
         // only keep 10 logs for no more than 10 days
@@ -24,24 +27,26 @@ pipeline {
 
     // the pipeline section we all know and love: stages! :D
     stages {
-        stage('Requirements') {
+        stage('Make executable') {
             steps {
-                echo 'Installing requirements...'
+                bat './scripts/fibonacci.bat'
             }
         }
-        stage('Build') {
+        stage('Relative path') {
             steps {
-                echo 'Building..'
+                bat "./scripts/fibonacci.sh ${env.NUMBER}"
             }
         }
-        stage('Test') {
+        stage('absolute') {
             steps {
-                echo 'Testing..'
+                bat "${env.WORKSPACE}/scripts/fibonacci.sh ${env.NUMBER}"
             }
         }
         stage('Report') {
             steps {
-                echo 'Reporting....'
+               dir("${env.WORKSPACE}/scripts"){
+                    bat "./fibonacci.sh ${env.NUMBER}"
+                }
             }
         }
     }
